@@ -25,6 +25,13 @@ func FindUserByPhone(phone string) User {
 	return user
 }
 
+// 根据id查询用户
+func FindUserByID(ID uint) User {
+	var user User
+	common.GetDb().First(&user, ID)
+	return user
+}
+
 // 检验手机号是否存在
 func IsTelephoneExits(telephone string) bool {
 	var user User

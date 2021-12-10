@@ -5,6 +5,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
+	"thsit.com/ginessential/common"
 	"thsit.com/ginessential/model"
 	"thsit.com/ginessential/util"
 )
@@ -37,7 +38,13 @@ func Login(c *gin.Context) {
 
 	}
 	// 发放token
-	token := "1111"
+	token, err := common.ReleaseToken(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "token 生成失败"})
+		log.Printf("token generate error : %v", err)
+		return
+	}
+
 	//
 	c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "登录成功", "data": gin.H{"token": token}})
 
@@ -69,7 +76,7 @@ func Register(c *gin.Context) {
 	}
 	hasedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"code": 422, "msg": "密码加密错误"})
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "密码加密错误"})
 		return
 	}
 
@@ -83,5 +90,12 @@ func Register(c *gin.Context) {
 	// 返回结果
 	c.JSON(200, gin.H{
 		"message": "注册成功",
+	})
+}
+func Info(c *gin.Context) {
+	user, _ := c.Get("user")
+	c.JSON(http.StatusOK, gin.H{
+		"message": "注册成功",
+		"data":    gin.H{"user": user},
 	})
 }
